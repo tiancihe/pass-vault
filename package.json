@@ -1,7 +1,13 @@
 {
   "name": "pass-vault",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A command line tool for managing secrets.",
+  "keywords": [
+    "password",
+    "cli",
+    "nodejs",
+    "typescript"
+  ],
   "files": [
     "dist",
     "package.json"
@@ -28,6 +34,10 @@
   "author": {
     "name": "Tianci He",
     "url": "https://github.com/tiancihe"
+  },
+  "homepage": "https://github.com/tiancihe/pass-vault",
+  "bugs": {
+    "url": "https://github.com/tiancihe/pass-vault/issues"
   },
   "license": "MIT"
 }
