@@ -1,0 +1,6 @@
+- Import|Export|Backup
+- Tests
+- CI
+- Maybe some fancy tags...
+- Maybe sync with any cloud service
+- Maybe a UI
