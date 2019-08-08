@@ -1,5 +1,3 @@
-#!usr/env/bin node
-
 import AppState from "./app-state"
 import Store, { StoreDataItemName } from "./store"
 import { User, Secret, KVPairs } from "./types"
@@ -8,7 +6,7 @@ import { generatePassword, parseArgs, throwNotLoggedIn, throwIncorrectSecret } f
 export type Command = "login" | "logout" | "gen" | "save" | "find"
 
 class App {
-    readonly VERSION = "0.1.0"
+    readonly VERSION = "0.1.3"
 
     readonly HELP_INFO =
 `
