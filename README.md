@@ -16,15 +16,31 @@ pass gen
 
 Generate a password.
 
+Flags:
+- --type
+
+    default to 1
+    0: includes only numbers
+    1: includes numbers and characters
+- --length
+
+    default to 8
+
 ### Login
 
 ```
 pass login USER SECRET
 ```
 
-Pass Vault will create different store files named ${USER}.store.json for each USER.
+PassVault will create different store files named USER.store.json for each USER.
 
-Once logged in:
+Secret is your encryption key, at least 4 characters, required.
+
+Note that:
+    PassVault will try to repeate your secret until 16 characters long.
+    This is because the encryptor used internally requires a key at least 16 characters long.
+
+## Once logged in:
 
 ### Save
 
@@ -32,7 +48,11 @@ Once logged in:
 pass save foo --Account bar@foo.com --Password foobarbaz
 ```
 
-You can save key-value pairs as many as you want, for example, you might want to add other information like ` --url https://foo.com `.
+You can save key-value pairs as many as you want.
+
+For example, you might want to add other information like ` --url https://foo.com ` later.
+
+If you save a new item which actually exists in the your store, your information will be updated, and overwritten.
 
 ### Find
 
@@ -51,4 +71,35 @@ pass find foo
 pass logout
 ```
 
-Note: logout will not remove your store file.
+Note: logout will not remove your store file, you can login later and continue to use.
+
+### Backup
+
+```
+pass backup
+```
+
+Backup your store file (encrypted) to cwd (current working directory).
+
+Note that:
+    Your backup file will have a format like this:
+    `USER.store.json-TIMESTAMP`
+    Please keep this format untouched.
+
+### Restore
+
+```
+pass backup
+```
+
+Restore your store from a backup file.
+
+Note that: yout should provide a relative path. e.g. USER.store.json-TIMESTAMP
+
+### Export
+
+```
+pass export
+```
+
+Export your secrets (unencrypted) to cwd, use with caution.

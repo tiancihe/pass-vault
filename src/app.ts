@@ -1,29 +1,24 @@
-import AppState from "./app-state"
-import Store, { StoreDataItemName } from "./store"
-import { User, Secret, KVPairs } from "./types"
-import { generatePassword, parseArgs, throwNotLoggedIn, throwIncorrectSecret } from "./utils"
+import path from "path"
 
-export type Command = "login" | "logout" | "gen" | "save" | "find"
+import AppState from "./app-state"
+import Store from "./store"
+import { generatePassword, argsToKVPairs } from "./utils"
+
+export type Command = "login" | "logout" | "gen" | "save" | "find" | "backup" | "restore" | "export"
 
 class App {
-    readonly VERSION = "0.1.3"
+    static readonly VERSION = "0.2.0"
 
-    readonly HELP_INFO =
+    static readonly HELP_INFO =
 `
 pass-vault
-    version: ${this.VERSION}
+    version: ${App.VERSION}
 
 Usage:
     -v | --version
         Print version.
     -h | --help
         Print help.
-    login [name] [secret]
-        Your secret and data will be stored in separate files, distinguished by name.
-        Secret is your encryption key, at least 16 characters, required.
-    logout
-
-Usage after logged in:
     gen
         --type
             default to 1
@@ -31,76 +26,63 @@ Usage after logged in:
             1: includes numbers and characters
         --length
             default to 8
+    login [name] [secret]
+        PassVault will create different store files named USER.store.json for each USER.
+        Secret is your encryption key, at least 4 characters, required.
+        Note that:
+            PassVault will try to repeate your secret until 16 characters long.
+            This is because the encryptor used internally requires a key at least 16 characters long.
+
+Usage after logged in:            
+    logout
     save [name]
-        e.g. pass save gmail --account lorem@gmail.com --password loremipsum
         --[key] [value]
+        e.g. pass save gmail --account lorem@gmail.com --password loremipsum
     find [name]
         e.g. pass find gmail
+    backup
+        Backup your store file (encrypted) to cwd (current working directory).
+        Note that: 
+            Your backup file will have a format like this:
+            USER.store.json-TIMESTAMP
+            Please keep this format untouched.
+    restore [file]
+        Restore your store from a backup file.
+        Note that: you should provide a relative path. e.g. USER.store.json-TIMESTAMP
+    export
+        Export your secrets (unencrypted) to cwd, use with caution.
 `
 
-    private state = new AppState()
+    private appState = new AppState()
 
-    constructor(private args: string[]) {}
+    constructor(private args: string[], private cwd: string) {}
 
-    login(user: User, secret: Secret) {
-        this.state.setUser(user)
-
-        new Store(user).init(secret)
-    }
-
-    logout() {
-        this.checkIsLoggedIn()
-
-        new Store(this.state.user).reset()
-
-        this.state.setUser("")
-    }
-
-    private checkIsLoggedIn() {
-        if(!this.state.user) {
-            throwNotLoggedIn()
-        }
-    }
-
-    save(name: StoreDataItemName, kvPairs: KVPairs) {
-        const store = new Store(this.state.user)
-
-        const storeData = store.read()
-        const index = storeData.data.findIndex(item => item.name === name)
-        const exists = index >= 0
-
-        if (!exists) {
-            storeData.data.push({
-                name,
-                created_at: new Date().toLocaleString(),
-                updated_at: "",
-                ...kvPairs
-            })
-        } else {
-            storeData.data[index] = {
-                ...storeData.data[index],
-                ...kvPairs,
-                updated_at: new Date().toLocaleString()
-            }
-        }
-
-        store.write(storeData)
-    }
-
-    find(name: StoreDataItemName) {
-        return new Store(this.state.user).read().data.find(item => item.name === name)
+    private get store() {
+        return new Store(this.appState.state.user, this.appState.state.secret)
     }
 
     run() {
-        switch(this.args[0]) {
+        const firstArg = this.args[0]
+
+        switch(firstArg) {
             case "-h":
             case "--help": {
-                console.log(this.HELP_INFO)
+                console.log(App.HELP_INFO)
                 break
             }
             case "-v":
             case "--version": {
-                console.log(`pass-vault: ${this.VERSION}`)
+                console.log(`pass-vault: ${App.VERSION}`)
+                break
+            }
+            case "gen": {
+                const kvPairs = argsToKVPairs(this.args.slice(1))
+                console.log(
+                    generatePassword({
+                        type: Number(kvPairs.type) || undefined,
+                        length: Number(kvPairs.length) || undefined
+                    })
+                )
                 break
             }
             case "login": {
@@ -111,73 +93,95 @@ Usage after logged in:
                     throw new Error("Please provide your name and secret.")
                 }
 
-                this.login(user, secret)
+                if(secret.length < 4) {
+                    throw new Error("Secret must be at least 4 characters.")
+                }
+
+                this.appState.setState({
+                    user,
+                    secret: secret.length < 16
+                        ? secret.repeat(Math.ceil(16 / secret.length))
+                        : secret
+                })
+                const store = this.store.read()
                 console.log(`Logged in as ${user}.`)
+                console.log(`Store is created at: ${new Date(store.created_at).toLocaleString()}`)
+                if(store.updated_at) console.log(`Store is updated at: ${new Date(store.updated_at).toLocaleString()}`)
                 break
             }
-            case "logout": {
-                this.logout()
-                console.log(`Logged out.`)
-                break
+        }
+
+        if(["logout", "save", "find", "backup", "restore", "export"].includes(firstArg)) {
+            if(!this.appState.isLoggedIn) {
+                throw new Error("Please login first.")
             }
-            
-            case "gen": {
-                const kvPairs = parseArgs(this.args.slice(1))
 
-                console.log(
-                    generatePassword({
-                        type: Number(kvPairs.type) || undefined,
-                        length: Number(kvPairs.length) || undefined
-                    })
-                )
-
-                break
-            }
-            case "save": {
-                const name = this.args[1]
-
-                if (!name || name.startsWith("--")) {
-                    throw new Error("Please provide a name.")
+            switch(firstArg) {
+                case "logout": {
+                    this.appState.reset()
+                    console.log(`Logged out.`)
+                    break
                 }
+                case "save": {
+                    const name = this.args[1]
 
-                this.save(name, parseArgs(this.args.slice(2)))
-                console.log(`Save succeeded.`)
-
-                break
-            }
-            case "find": {
-                const name = this.args[1]
-
-                if (!name || name.startsWith("--")) {
-                    throw new Error("Please provide a name.")
-                }
-
-                const item = this.find(name)
-
-                if(item) {
-                    console.log(`${name}: `)
-                    const skipThese = ["name", "created_at", "updated_at"]
-                    for (const [key, value] of Object.entries(item)) {
-                        if(skipThese.includes(key)) continue
-                        console.log(`${key}: ${value}`)
+                    if (!name || name.startsWith("--")) {
+                        throw new Error("Please provide a name.")
                     }
-                    console.log(`Created At: ${item.created_at}`)
-                    console.log(`Updated At: ${item.created_at}`)
-                } else {
-                    console.log(`Record not found: ${name}.`)
-                }
 
-                break
-            }
-            default: {
-                console.log(this.HELP_INFO)
+                    this.store.save(name, argsToKVPairs(this.args.slice(2)))
+                    console.log(`Save succeeded.`)
+                    break
+                }
+                case "find": {
+                    const name = this.args[1]
+
+                    if (!name) {
+                        throw new Error("Please provide a name to find.")
+                    }
+
+                    const item = this.store.find(name)
+
+                    if(item) {
+                        console.log(`${name}: `)
+                        const skipThese = ["name", "created_at", "updated_at"]
+                        for (const [key, value] of Object.entries(item)) {
+                            if(skipThese.includes(key)) continue
+                            console.log(`${key}: ${value}`)
+                        }
+                        console.log(`Created At: ${new Date(item.created_at).toLocaleString()}`)
+                        console.log(`Updated At: ${new Date(item.created_at).toLocaleString()}`)
+                    } else {
+                        console.log(`Record not found.`)
+                    }
+                    break
+                }
+                case "backup": {
+                    this.store.backup(this.cwd)
+                    console.log("Store file backuped.")
+                    break
+                }
+                case "restore": {
+                    const pathArg = this.args[1];
+                    this.store.restore(path.resolve(this.cwd, pathArg))
+                    console.log("Backup restored.")
+                    break
+                }
+                case "export": {
+                    this.store.export(this.cwd)
+                    break
+                }
+                default: {
+                    console.log(App.HELP_INFO)
+                    break;
+                }
             }
         }
     }
 }
 
 try {
-    new App(process.argv.slice(2)).run()
+    new App(process.argv.slice(2), process.cwd()).run()
     process.exit(0)
 } catch (error) {
     console.log(error.message)

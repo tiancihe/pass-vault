@@ -36,7 +36,7 @@ export const generatePassword = ({
     length = 8
 } = {} as GenerateOptions) => range(0, length).map(buildPickChar(type)).join("")
 
-export function parseArgs(args: string[]) {
+export function argsToKVPairs(args: string[]) {
     const kvPairs = {} as {
         [key: string]: string;
     };
@@ -59,11 +59,3 @@ export function parseArgs(args: string[]) {
 
     return kvPairs;
 };
-
-export function throwNotLoggedIn() {
-    throw new Error("Please login first.")
-}
-
-export function throwIncorrectSecret() {
-    throw new Error("Your secret is not correct.")
-}

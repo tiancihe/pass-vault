@@ -14,4 +14,6 @@ export default class FS {
     static exists = fs.existsSync
 
     static rm = fs.unlinkSync
+
+    static cp = fs.copyFileSync
 }
