@@ -103,6 +103,10 @@ class Store {
         return this.read().data.find(item => item.name === name)
     }
 
+    list() {
+        return this.read().data.map(item => item.name)
+    }
+
     genBackupName() {
         return `${this.storeFile}-${Date.now()}`
     }

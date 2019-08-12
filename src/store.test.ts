@@ -58,6 +58,10 @@ describe("Store", () => {
         expect(item_2.updated_at).toBeFalsy()
     })
 
+    it("should be able to list all items", () => {
+        expect(store.list()).toMatchObject([ITEM_1_NAME, ITEM_2_NAME])
+    })
+
     it("should update an item if it already exists when save", () => {
         const itemBeforeUpdate = store.find(ITEM_1_NAME)
         store.save(ITEM_1_NAME, {

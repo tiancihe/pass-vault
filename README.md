@@ -65,6 +65,24 @@ pass find foo
 # Password: foobarbaz
 ```
 
+### Clip
+
+```
+pass clip gmail password
+
+# This will clip your gmail's password to your clipboard.
+```
+
+Currently supports windows and wsl ubuntu.
+
+### List
+
+```
+pass list
+```
+
+Print all your saved items' name.
+
 ### Logout
 
 ```

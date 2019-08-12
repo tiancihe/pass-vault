@@ -1,16 +1,14 @@
 import path from "path"
+import os from "os"
 
 import AppState from "./app-state"
 import Store from "./store"
-import { generatePassword, argsToKVPairs } from "./utils"
-
-export type Command = "login" | "logout" | "gen" | "save" | "find" | "backup" | "restore" | "export"
+import { generatePassword, argsToKVPairs, copyToClipboard } from "./utils"
 
 class App {
-    static readonly VERSION = "0.2.0"
+    static readonly VERSION = "0.3.0"
 
-    static readonly HELP_INFO =
-`
+    static readonly HELP_INFO = `
 pass-vault
     version: ${App.VERSION}
 
@@ -20,11 +18,11 @@ Usage:
     -h | --help
         Print help.
     gen
-        --type
+        -t | --type
             default to 1
             0: includes only numbers
             1: includes numbers and characters
-        --length
+        -l | --length
             default to 8
     login [name] [secret]
         PassVault will create different store files named USER.store.json for each USER.
@@ -33,16 +31,21 @@ Usage:
             PassVault will try to repeate your secret until 16 characters long.
             This is because the encryptor used internally requires a key at least 16 characters long.
 
-Usage after logged in:            
+Usage after logged in:
     logout
     save [name]
         --[key] [value]
         e.g. pass save gmail --account lorem@gmail.com --password loremipsum
     find [name]
         e.g. pass find gmail
+    clip [name] [key]
+        e.g. pass clip gmail password
+        This will copy gmail's ([name]) password ([key]) to clipboard.
+    list
+        Print all your saved items' name.
     backup
         Backup your store file (encrypted) to cwd (current working directory).
-        Note that: 
+        Note that:
             Your backup file will have a format like this:
             USER.store.json-TIMESTAMP
             Please keep this format untouched.
@@ -55,7 +58,7 @@ Usage after logged in:
 
     private appState = new AppState()
 
-    constructor(private args: string[], private cwd: string) {}
+    constructor(private args: string[], private cwd: string) { }
 
     private get store() {
         return new Store(this.appState.state.user, this.appState.state.secret)
@@ -64,7 +67,7 @@ Usage after logged in:
     run() {
         const firstArg = this.args[0]
 
-        switch(firstArg) {
+        switch (firstArg) {
             case "-h":
             case "--help": {
                 console.log(App.HELP_INFO)
@@ -79,8 +82,8 @@ Usage after logged in:
                 const kvPairs = argsToKVPairs(this.args.slice(1))
                 console.log(
                     generatePassword({
-                        type: Number(kvPairs.type) || undefined,
-                        length: Number(kvPairs.length) || undefined
+                        type: Number(kvPairs.t || kvPairs.type) || undefined,
+                        length: Number(kvPairs.l || kvPairs.length) || undefined
                     })
                 )
                 break
@@ -93,7 +96,7 @@ Usage after logged in:
                     throw new Error("Please provide your name and secret.")
                 }
 
-                if(secret.length < 4) {
+                if (secret.length < 4) {
                     throw new Error("Secret must be at least 4 characters.")
                 }
 
@@ -106,17 +109,17 @@ Usage after logged in:
                 const store = this.store.read()
                 console.log(`Logged in as ${user}.`)
                 console.log(`Store is created at: ${new Date(store.created_at).toLocaleString()}`)
-                if(store.updated_at) console.log(`Store is updated at: ${new Date(store.updated_at).toLocaleString()}`)
+                if (store.updated_at) console.log(`Store is updated at: ${new Date(store.updated_at).toLocaleString()}`)
                 break
             }
         }
 
-        if(["logout", "save", "find", "backup", "restore", "export"].includes(firstArg)) {
-            if(!this.appState.isLoggedIn) {
+        if (["logout", "save", "find", "clip", "list", "backup", "restore", "export"].includes(firstArg)) {
+            if (!this.appState.isLoggedIn) {
                 throw new Error("Please login first.")
             }
 
-            switch(firstArg) {
+            switch (firstArg) {
                 case "logout": {
                     this.appState.reset()
                     console.log(`Logged out.`)
@@ -142,11 +145,11 @@ Usage after logged in:
 
                     const item = this.store.find(name)
 
-                    if(item) {
-                        console.log(`${name}: `)
+                    if (item) {
+                        console.log(`${item.name}: `)
                         const skipThese = ["name", "created_at", "updated_at"]
                         for (const [key, value] of Object.entries(item)) {
-                            if(skipThese.includes(key)) continue
+                            if (skipThese.includes(key)) continue
                             console.log(`${key}: ${value}`)
                         }
                         console.log(`Created At: ${new Date(item.created_at).toLocaleString()}`)
@@ -154,6 +157,29 @@ Usage after logged in:
                     } else {
                         console.log(`Record not found.`)
                     }
+
+                    break
+                }
+                case "clip": {
+                    const name = this.args[1]
+                    const key = this.args[2]
+
+                    if (!name || !key) {
+                        throw new Error("Please provide both name and key.")
+                    }
+
+                    const item = this.store.find(name)
+
+                    if (item) {
+                        copyToClipboard(item[key])
+                        console.log("Copied to clipboard.")
+                    }
+
+                    break
+                }
+                case "list": {
+                    const list = this.store.list()
+                    console.log(list.join(os.EOL))
                     break
                 }
                 case "backup": {
@@ -162,7 +188,7 @@ Usage after logged in:
                     break
                 }
                 case "restore": {
-                    const pathArg = this.args[1];
+                    const pathArg = this.args[1]
                     this.store.restore(path.resolve(this.cwd, pathArg))
                     console.log("Backup restored.")
                     break
@@ -173,7 +199,7 @@ Usage after logged in:
                 }
                 default: {
                     console.log(App.HELP_INFO)
-                    break;
+                    break
                 }
             }
         }

@@ -1,3 +1,6 @@
+import os from "os"
+import cp from "child_process"
+
 export function range(start: number, end: number) {
     if (end <= start) {
         throw new Error(`range: end: ${end} is not greater than start: ${start}`)
@@ -59,3 +62,17 @@ export function argsToKVPairs(args: string[]) {
 
     return kvPairs;
 };
+
+export function copyToClipboard(text: string) {
+    const isWindows = os.platform() === "win32"
+    if(isWindows) {
+        cp.execSync(`echo ${text} | clip`)
+        return
+    }
+
+    const isWsl = os.platform() === "linux" || os.release().toLowerCase().includes("microsoft")
+    if(isWsl) {
+        cp.execSync(`echo ${text} | clip.exe`)
+        return
+    }
+}

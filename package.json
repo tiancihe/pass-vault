@@ -1,6 +1,6 @@
 {
   "name": "pass-vault",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A command line tool for managing secrets.",
   "keywords": [
     "password",
@@ -9,7 +9,7 @@
     "typescript"
   ],
   "files": [
-    "dist",
+    "dist/pass-vault.js",
     "package.json"
   ],
   "main": "dist/pass-vault.js",
