@@ -8,3 +8,8 @@
 
 - New commands: `clip` / `list`
 - Added flag shortcuts `-l` and `-t`
+
+## 0.4.0
+
+- Command `gen` now copys generated password to clipboard by default
+- Docs and chores

@@ -63,16 +63,16 @@ export function argsToKVPairs(args: string[]) {
     return kvPairs;
 };
 
-export function copyToClipboard(text: string) {
+export function copyToClipboard(text: string): string {
     const isWindows = os.platform() === "win32"
     if(isWindows) {
         cp.execSync(`echo ${text} | clip`)
-        return
+        return text
     }
 
     const isWsl = os.platform() === "linux" || os.release().toLowerCase().includes("microsoft")
     if(isWsl) {
         cp.execSync(`echo ${text} | clip.exe`)
-        return
+        return text
     }
 }

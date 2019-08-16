@@ -6,7 +6,7 @@ import Store from "./store"
 import { generatePassword, argsToKVPairs, copyToClipboard } from "./utils"
 
 class App {
-    static readonly VERSION = "0.3.0"
+    static readonly VERSION = "0.3.1"
 
     static readonly HELP_INFO = `
 pass-vault
@@ -81,10 +81,12 @@ Usage after logged in:
             case "gen": {
                 const kvPairs = argsToKVPairs(this.args.slice(1))
                 console.log(
-                    generatePassword({
-                        type: Number(kvPairs.t || kvPairs.type) || undefined,
-                        length: Number(kvPairs.l || kvPairs.length) || undefined
-                    })
+                    copyToClipboard(
+                        generatePassword({
+                            type: Number(kvPairs.t || kvPairs.type) || undefined,
+                            length: Number(kvPairs.l || kvPairs.length) || undefined
+                        })
+                    )
                 )
                 break
             }

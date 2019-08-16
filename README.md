@@ -17,12 +17,14 @@ pass gen
 Generate a password.
 
 Flags:
-- --type
+- -t | --type
 
     default to 1
+
     0: includes only numbers
+
     1: includes numbers and characters
-- --length
+- -l | --length
 
     default to 8
 
