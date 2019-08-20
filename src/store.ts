@@ -3,24 +3,9 @@ import path from "path"
 import Encryptor from "simple-encryptor"
 
 import FS from "./fs"
-import { User, Secret } from "./app-state"
+import { User, Secret } from "./types/auth"
+import { IStore } from "./types/store"
 import { KVPairs } from "./types"
-
-export type StoreDataItemName = string
-
-export interface IStoreDataItem extends KVPairs {
-    name: StoreDataItemName
-    created_at: string
-    updated_at: string
-}
-
-export type StoreData = IStoreDataItem[]
-
-export interface IStore {
-    data: StoreData
-    created_at: string
-    updated_at: string
-}
 
 class Store {
     constructor(private user: User, private secret: Secret) {
@@ -48,7 +33,7 @@ class Store {
     }
 
     init() {
-        if(!FS.exists(this.storePath)) {
+        if (!FS.exists(this.storePath)) {
             FS.write(
                 this.storePath,
                 this.encryptor.encrypt(Store.genEmptyStore())
@@ -59,10 +44,10 @@ class Store {
     read() {
         const store = this.encryptor.decrypt(FS.read(this.storePath)) as IStore
 
-        if(!store) {
+        if (!store) {
             throw new Error("Your secret is not correct.")
         }
-        
+
         return store
     }
 
@@ -76,7 +61,7 @@ class Store {
         )
     }
 
-    save(name: StoreDataItemName, KVPairs: KVPairs) {
+    save(name: string, KVPairs: KVPairs) {
         const store = this.read()
         const index = store.data.findIndex(item => item.name === name)
         const exists = index >= 0
@@ -99,12 +84,16 @@ class Store {
         this.write(store)
     }
 
-    find(name: StoreDataItemName) {
+    find(name: string) {
         return this.read().data.find(item => item.name === name)
     }
 
     list() {
-        return this.read().data.map(item => item.name)
+        return this.read().data.map(item => ({
+            name: item.name,
+            created_at: item.created_at,
+            updated_at: item.updated_at
+        }))
     }
 
     genBackupName() {
@@ -113,7 +102,10 @@ class Store {
 
     /** backup the encrypted store file to dir */
     backup(dir: string, { fileName } = {} as { fileName?: string }) {
-        FS.cp(this.storePath, path.resolve(dir, fileName || this.genBackupName()))
+        FS.cp(
+            this.storePath,
+            path.resolve(dir, fileName || this.genBackupName())
+        )
     }
 
     /** restore store from path (must be a backup file) */

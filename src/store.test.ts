@@ -41,10 +41,10 @@ describe("Store", () => {
     it("should be able to save items and find them afterwards", () => {
         store.save(ITEM_1_NAME, ITEM_1)
         const item_1 = store.find(ITEM_1_NAME)
-        
+
         expect(item_1.account === ITEM_1.account).toBeTruthy()
         expect(item_1.password === ITEM_1.password).toBeTruthy()
-        
+
         expect(item_1.created_at).toBeTruthy()
         expect(item_1.updated_at).toBeFalsy()
 
@@ -53,13 +53,16 @@ describe("Store", () => {
 
         expect(item_2.account === ITEM_2.account).toBeTruthy()
         expect(item_2.password === ITEM_2.password).toBeTruthy()
-        
+
         expect(item_2.created_at).toBeTruthy()
         expect(item_2.updated_at).toBeFalsy()
     })
 
     it("should be able to list all items", () => {
-        expect(store.list()).toMatchObject([ITEM_1_NAME, ITEM_2_NAME])
+        expect(store.list().map(item => item.name)).toMatchObject([
+            ITEM_1_NAME,
+            ITEM_2_NAME
+        ])
     })
 
     it("should update an item if it already exists when save", () => {
@@ -71,8 +74,12 @@ describe("Store", () => {
 
         expect(itemAfterUpdate.url === ITEM_1_URL)
 
-        expect(itemBeforeUpdate.created_at === itemAfterUpdate.created_at).toBeTruthy()
-        expect(itemBeforeUpdate.updated_at === itemAfterUpdate.updated_at).toBeFalsy()
+        expect(
+            itemBeforeUpdate.created_at === itemAfterUpdate.created_at
+        ).toBeTruthy()
+        expect(
+            itemBeforeUpdate.updated_at === itemAfterUpdate.updated_at
+        ).toBeFalsy()
     })
 
     it("should backup and restore correctly", () => {
@@ -85,6 +92,8 @@ describe("Store", () => {
     it("should export uncrypted successfully", () => {
         store.export(DIR, { fileName: UNENCRYPTED })
 
-        expect(JSON.parse(FS.read(UNENCRYPTED_PATH))).toMatchObject(store.read())
+        expect(JSON.parse(FS.read(UNENCRYPTED_PATH))).toMatchObject(
+            store.read()
+        )
     })
 })

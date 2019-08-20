@@ -8,6 +8,14 @@ npm i -g pass-vault
 
 ## Commands
 
+### ui
+
+```
+pass ui
+```
+
+Pass Vault now includes a GUI.
+
 ### Gen
 
 ```

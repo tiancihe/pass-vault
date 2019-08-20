@@ -3,12 +3,14 @@
     "esModuleInterop": true,
     "target": "esnext",
     "module": "commonjs",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "outDir": "build"
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "src/client/**/*"
   ]
 }

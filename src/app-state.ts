@@ -1,16 +1,8 @@
 import path from "path"
 
-import FS from "./fs";
+import FS from "./fs"
 
-export type User = string;
-
-/** @see https://www.npmjs.com/package/simple-encryptor */
-export type Secret = string;
-
-export interface IAppState {
-    user: User
-    secret: Secret
-}
+import { IAppState } from "./types/auth"
 
 export default class AppState {
     static readonly PATH = path.resolve(__dirname, "app-state.json")
@@ -25,7 +17,7 @@ export default class AppState {
     state: IAppState
 
     constructor() {
-        if(!FS.exists(AppState.PATH)) {
+        if (!FS.exists(AppState.PATH)) {
             this.setState(AppState.genEmptyAppState())
         } else {
             this.state = this.read()
@@ -45,10 +37,7 @@ export default class AppState {
             ...this.state,
             ...state
         }
-        FS.write(
-            AppState.PATH,
-            JSON.stringify(this.state)
-        )
+        FS.write(AppState.PATH, JSON.stringify(this.state))
     }
 
     reset() {

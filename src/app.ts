@@ -1,12 +1,16 @@
 import path from "path"
 import os from "os"
+import cp from "child_process"
+
+import open from "open"
 
 import AppState from "./app-state"
 import Store from "./store"
 import { generatePassword, argsToKVPairs, copyToClipboard } from "./utils"
+import { SERVER_PORT } from "./constants"
 
-class App {
-    static readonly VERSION = "0.3.1"
+export default class App {
+    static readonly VERSION = "0.4.0"
 
     static readonly HELP_INFO = `
 pass-vault
@@ -17,6 +21,8 @@ Usage:
         Print version.
     -h | --help
         Print help.
+    ui
+        Open GUI using default browser
     gen
         -t | --type
             default to 1
@@ -58,7 +64,7 @@ Usage after logged in:
 
     private appState = new AppState()
 
-    constructor(private args: string[], private cwd: string) { }
+    constructor(private args: string[], private cwd: string) {}
 
     private get store() {
         return new Store(this.appState.state.user, this.appState.state.secret)
@@ -83,8 +89,10 @@ Usage after logged in:
                 console.log(
                     copyToClipboard(
                         generatePassword({
-                            type: Number(kvPairs.t || kvPairs.type) || undefined,
-                            length: Number(kvPairs.l || kvPairs.length) || undefined
+                            type:
+                                Number(kvPairs.t || kvPairs.type) || undefined,
+                            length:
+                                Number(kvPairs.l || kvPairs.length) || undefined
                         })
                     )
                 )
@@ -104,19 +112,47 @@ Usage after logged in:
 
                 this.appState.setState({
                     user,
-                    secret: secret.length < 16
-                        ? secret.repeat(Math.ceil(16 / secret.length))
-                        : secret
+                    secret:
+                        secret.length < 16
+                            ? secret.repeat(Math.ceil(16 / secret.length))
+                            : secret
                 })
                 const store = this.store.read()
                 console.log(`Logged in as ${user}.`)
-                console.log(`Store is created at: ${new Date(store.created_at).toLocaleString()}`)
-                if (store.updated_at) console.log(`Store is updated at: ${new Date(store.updated_at).toLocaleString()}`)
+                console.log(
+                    `Store is created at: ${new Date(
+                        store.created_at
+                    ).toLocaleString()}`
+                )
+                if (store.updated_at)
+                    console.log(
+                        `Store is updated at: ${new Date(
+                            store.updated_at
+                        ).toLocaleString()}`
+                    )
+                break
+            }
+            case "ui": {
+                open(`http://localhost:${SERVER_PORT}`)
+                cp.execSync(`node ${path.resolve(__dirname, "server.js")}`, {
+                    stdio: "inherit"
+                })
                 break
             }
         }
 
-        if (["logout", "save", "find", "clip", "list", "backup", "restore", "export"].includes(firstArg)) {
+        if (
+            [
+                "logout",
+                "save",
+                "find",
+                "clip",
+                "list",
+                "backup",
+                "restore",
+                "export"
+            ].includes(firstArg)
+        ) {
             if (!this.appState.isLoggedIn) {
                 throw new Error("Please login first.")
             }
@@ -154,8 +190,16 @@ Usage after logged in:
                             if (skipThese.includes(key)) continue
                             console.log(`${key}: ${value}`)
                         }
-                        console.log(`Created At: ${new Date(item.created_at).toLocaleString()}`)
-                        console.log(`Updated At: ${new Date(item.created_at).toLocaleString()}`)
+                        console.log(
+                            `Created At: ${new Date(
+                                item.created_at
+                            ).toLocaleString()}`
+                        )
+                        console.log(
+                            `Updated At: ${new Date(
+                                item.created_at
+                            ).toLocaleString()}`
+                        )
                     } else {
                         console.log(`Record not found.`)
                     }
@@ -180,7 +224,7 @@ Usage after logged in:
                     break
                 }
                 case "list": {
-                    const list = this.store.list()
+                    const list = this.store.list().map(item => item.name)
                     console.log(list.join(os.EOL))
                     break
                 }
@@ -197,10 +241,6 @@ Usage after logged in:
                 }
                 case "export": {
                     this.store.export(this.cwd)
-                    break
-                }
-                default: {
-                    console.log(App.HELP_INFO)
                     break
                 }
             }
