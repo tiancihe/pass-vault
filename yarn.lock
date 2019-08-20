@@ -2967,6 +2967,11 @@ escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
+escape-string-regexp@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz#a30304e99daa32e23b2fd20f51babd07cffca344"
+  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
+
 escodegen@^1.11.1, escodegen@^1.8.1:
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.12.0.tgz#f763daf840af172bb3a2b6dd7219c0e17f7ff541"
@@ -5724,6 +5729,15 @@ parcel-bundler@^1.12.3:
     terser "^3.7.3"
     v8-compile-cache "^2.0.0"
     ws "^5.1.1"
+
+parcel-plugin-shebang@^1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/parcel-plugin-shebang/-/parcel-plugin-shebang-1.2.8.tgz#74044b6ddf850715ec7f18a2098c9c36926e3fd3"
+  integrity sha512-ZTbUZ33EH03yeNxEi85LO3iLr9svs7q8ZLyqErMvIhMxjll6F07dKWuZMNwldHivf9mIbB+/ls3QdWZyFGpWmA==
+  dependencies:
+    escape-string-regexp "^2.0.0"
+    parcel-bundler "^1.12.3"
+    yn "^3.1.1"
 
 parse-asn1@^5.0.0:
   version "5.1.4"
@@ -8650,3 +8664,8 @@ yargs@^12.0.2, yargs@^12.0.5:
     which-module "^2.0.0"
     y18n "^3.2.1 || ^4.0.0"
     yargs-parser "^11.1.1"
+
+yn@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
+  integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==

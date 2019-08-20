@@ -20,3 +20,8 @@
 - Added GUI and server -- based on react, antd and express
 - Migrate from rollup to parcel
 - Using concurrently to speeds up development
+
+## 0.4.1
+
+- Adds shebang -- v0.4.0 does not work due to lack of node shebang
+- Resolves version from package.json directly

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import path from "path"
 import os from "os"
 import cp from "child_process"
@@ -8,13 +10,12 @@ import AppState from "./app-state"
 import Store from "./store"
 import { generatePassword, argsToKVPairs, copyToClipboard } from "./utils"
 import { SERVER_PORT } from "./constants"
+import { version } from "../package.json"
 
 export default class App {
-    static readonly VERSION = "0.4.0"
-
     static readonly HELP_INFO = `
 pass-vault
-    version: ${App.VERSION}
+    version: ${version}
 
 Usage:
     -v | --version
@@ -81,7 +82,7 @@ Usage after logged in:
             }
             case "-v":
             case "--version": {
-                console.log(`pass-vault: ${App.VERSION}`)
+                console.log(`pass-vault: ${version}`)
                 break
             }
             case "gen": {
