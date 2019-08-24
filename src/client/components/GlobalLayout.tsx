@@ -12,7 +12,7 @@ function GlobalLayout(
 
     const handleNavigate = (route: string) => {
         if (isLoggedIn) props.history.push(route)
-        message.warning("Please login first")
+        else message.warning("Please login first")
     }
 
     return (

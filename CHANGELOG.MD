@@ -42,3 +42,7 @@
 - Manual control `MenuItem`s
 - Notification for errors
 - Rename App to CLI
+
+## 0.5.2
+
+- Fixed a issue: (Fogot `else` 😑)
