@@ -2,6 +2,9 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "jsx": "react",
-        "module": "esnext"
+        "module": "esnext",
+        "types": [
+            "react", "react-dom", "react-router-dom" 
+        ]
     }
 }

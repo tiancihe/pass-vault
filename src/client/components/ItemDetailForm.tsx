@@ -16,8 +16,9 @@ import {
 import { FormComponentProps, FormItemProps } from "antd/lib/form"
 import copy from "copy-to-clipboard"
 
+import useSetting from "../hooks/useSetting"
 import { generatePassword } from "../../utils"
-import { ItemInfo } from "../../types/item"
+import { IStoreDataItemInfo } from "../../types"
 
 const formItemLayout: Pick<FormItemProps, "labelCol" | "wrapperCol"> = {
     labelCol: {
@@ -28,7 +29,7 @@ const formItemLayout: Pick<FormItemProps, "labelCol" | "wrapperCol"> = {
     }
 }
 
-export default function ItemDetailForm<T extends ItemInfo>(
+export default function ItemDetailForm<T extends IStoreDataItemInfo>(
     props: FormComponentProps & {
         isCreate: boolean
         detail?: T
@@ -42,10 +43,11 @@ export default function ItemDetailForm<T extends ItemInfo>(
         form: { getFieldDecorator, getFieldValue, setFieldsValue }
     } = props
 
+    const { setting } = useSetting()
+
     const [editing, setEditing] = useState(isCreate)
     const [keyToAdd, setKeyToAdd] = useState("")
     const [keys, setKeys] = useState(["Account", "Password"])
-    const [generatedPassword, setGeneratedPassword] = useState("")
     const [generateType, setGenerateType] = useState(1)
     const [generateLength, setGenerateLength] = useState(8)
 
@@ -92,7 +94,6 @@ export default function ItemDetailForm<T extends ItemInfo>(
                             <Row type="flex" gutter={8}>
                                 <Col>
                                     <Button
-                                        type="primary"
                                         onClick={() => {
                                             const pwd = generatePassword({
                                                 type: generateType,
@@ -197,19 +198,35 @@ export default function ItemDetailForm<T extends ItemInfo>(
                                         alignItems: "center"
                                     }}
                                 >
-                                    <Input.Password
-                                        style={{
-                                            flex: 1,
-                                            marginRight: "1em"
-                                        }}
-                                        placeholder={`Input ${key}`}
-                                        value={getFieldValue(key)}
-                                        onChange={e =>
-                                            setFieldsValue({
-                                                [key]: e.target.value
-                                            })
-                                        }
-                                    />
+                                    {setting.defaultInvisible.includes(key) ? (
+                                        <Input.Password
+                                            style={{
+                                                flex: 1,
+                                                marginRight: "1em"
+                                            }}
+                                            placeholder={`Input ${key}`}
+                                            value={getFieldValue(key)}
+                                            onChange={e =>
+                                                setFieldsValue({
+                                                    [key]: e.target.value
+                                                })
+                                            }
+                                        />
+                                    ) : (
+                                        <Input
+                                            style={{
+                                                flex: 1,
+                                                marginRight: "1em"
+                                            }}
+                                            placeholder={`Input ${key}`}
+                                            value={getFieldValue(key)}
+                                            onChange={e =>
+                                                setFieldsValue({
+                                                    [key]: e.target.value
+                                                })
+                                            }
+                                        />
+                                    )}
                                     <Button
                                         onClick={() =>
                                             setKeys(keys.filter(k => k !== key))
@@ -220,8 +237,10 @@ export default function ItemDetailForm<T extends ItemInfo>(
                                     />
                                 </div>
                             )
-                        ) : (
+                        ) : setting.defaultInvisible.includes(key) ? (
                             <DetailFieldValue value={detail[key] || ""} />
+                        ) : (
+                            detail[key] || ""
                         )}
                     </Form.Item>
                 ))}

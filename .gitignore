@@ -2,3 +2,5 @@ node_modules
 build
 dist
 .cache
+.pass-vault
+.pass-vault-backups

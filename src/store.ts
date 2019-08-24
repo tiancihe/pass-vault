@@ -3,12 +3,12 @@ import path from "path"
 import Encryptor from "simple-encryptor"
 
 import FS from "./fs"
-import { User, Secret } from "./types/auth"
-import { IStore } from "./types/store"
-import { KVPairs } from "./types"
+import { ROOT_DIR, BACKUP_DIR } from "./constants"
+import { IUser, ISecret, IStore, IKVPairs, IStoreDataItemName } from "./types"
+import AppState from "./app-state"
 
 class Store {
-    constructor(private user: User, private secret: Secret) {
+    constructor(private user: IUser, private secret: ISecret) {
         this.init()
     }
 
@@ -17,7 +17,7 @@ class Store {
     }
 
     get storePath() {
-        return path.resolve(__dirname, this.storeFile)
+        return path.resolve(ROOT_DIR, this.storeFile)
     }
 
     static genEmptyStore() {
@@ -59,9 +59,13 @@ class Store {
                 updated_at: new Date().toString()
             } as IStore)
         )
+
+        if (new AppState().getUserSetting().autoBackup) {
+            this.backup(BACKUP_DIR)
+        }
     }
 
-    save(name: string, KVPairs: KVPairs) {
+    save(name: IStoreDataItemName, KVPairs: IKVPairs) {
         const store = this.read()
         const index = store.data.findIndex(item => item.name === name)
         const exists = index >= 0
@@ -84,7 +88,7 @@ class Store {
         this.write(store)
     }
 
-    find(name: string) {
+    find(name: IStoreDataItemName) {
         return this.read().data.find(item => item.name === name)
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "pass-vault",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "A command line app for managing secrets.",
   "keywords": [
     "password",
@@ -18,7 +18,8 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "concurrently \"parcel watch src/server.ts --target node\" \"nodemon dist/server.js\" \"parcel serve src/client/index.html -d dist/client\"",
+    "dev:client": "",
+    "dev": "concurrently \"parcel watch src/server.ts --target node\" \"nodemon dist/server.js\" \"parcel watch src/client/index.html -d dist/client\"",
     "build": "concurrently \"parcel build src/app.ts --target node --no-source-maps\" \"parcel build src/server.ts --target node --no-source-maps\" \"parcel build src/client/index.html -d dist/client --no-source-maps\""
   },
   "dependencies": {

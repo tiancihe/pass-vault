@@ -2,13 +2,13 @@ import React from "react"
 import { Link, withRouter, RouteComponentProps } from "react-router-dom"
 import { Layout, Menu, Icon, Dropdown } from "antd"
 
-import useAuth from "../hooks/useAuth"
-import { logout } from "../services/auth"
+import useUser from "../hooks/useUser"
+import { logout } from "../services/user"
 
 function GlobalLayout(
     props: RouteComponentProps & { children?: React.ReactNode }
 ) {
-    const { isLoggedIn, auth, setAuth } = useAuth()
+    const { isLoggedIn, user, setUser } = useUser()
 
     return (
         <Layout style={{ height: "100vh" }}>
@@ -31,6 +31,18 @@ function GlobalLayout(
                             New
                         </Link>
                     </Menu.Item>
+                    <Menu.Item key="/backup-and-restore">
+                        <Link to="/backup-and-restore">
+                            <Icon type="database" />
+                            Backup and Restore
+                        </Link>
+                    </Menu.Item>
+                    <Menu.Item key="/setting">
+                        <Link to="/setting">
+                            <Icon type="setting" />
+                            Setting
+                        </Link>
+                    </Menu.Item>
                 </Menu>
             </Layout.Sider>
             <Layout>
@@ -50,9 +62,7 @@ function GlobalLayout(
                                             onClick={async () => {
                                                 const res = await logout()
                                                 if (res.success) {
-                                                    setAuth({
-                                                        name: ""
-                                                    })
+                                                    setUser("")
                                                 }
                                             }}
                                         >
@@ -62,7 +72,7 @@ function GlobalLayout(
                                     </Menu>
                                 }
                             >
-                                <span>{auth.name}</span>
+                                <span>{user}</span>
                             </Dropdown>
                         ) : (
                             <Link to="/login">

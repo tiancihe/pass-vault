@@ -10,9 +10,10 @@ import AppState from "./app-state"
 import Store from "./store"
 import { generatePassword, argsToKVPairs, copyToClipboard } from "./utils"
 import { SERVER_PORT } from "./constants"
+
 import { version } from "../package.json"
 
-export default class App {
+class CLI {
     static readonly HELP_INFO = `
 pass-vault
     version: ${version}
@@ -23,7 +24,7 @@ Usage:
     -h | --help
         Print help.
     ui
-        Open GUI using default browser
+        Open UI using default browser
     gen
         -t | --type
             default to 1
@@ -77,7 +78,7 @@ Usage after logged in:
         switch (firstArg) {
             case "-h":
             case "--help": {
-                console.log(App.HELP_INFO)
+                console.log(CLI.HELP_INFO)
                 break
             }
             case "-v":
@@ -160,7 +161,7 @@ Usage after logged in:
 
             switch (firstArg) {
                 case "logout": {
-                    this.appState.reset()
+                    this.appState.logout()
                     console.log(`Logged out.`)
                     break
                 }
@@ -250,7 +251,7 @@ Usage after logged in:
 }
 
 try {
-    new App(process.argv.slice(2), process.cwd()).run()
+    new CLI(process.argv.slice(2), process.cwd()).run()
     process.exit(0)
 } catch (error) {
     console.log(error.message)

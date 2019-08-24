@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react"
-import { RouteComponentProps } from "react-router"
+import { RouteComponentProps } from "react-router-dom"
 import { Form } from "antd"
 import { FormComponentProps } from "antd/lib/form"
 
 import GlobalLayout from "../components/GlobalLayout"
 import ItemDetailForm from "../components/ItemDetailForm"
 import { getItem, saveItem } from "../services/item"
-import { Item } from "../../types/item"
+
+import { IStoreDataItem } from "../../types"
 
 function ItemDetail(
     props: RouteComponentProps<{ name: string }> & FormComponentProps
 ) {
-    const [detail, setDetail] = useState({} as Item)
+    const [detail, setDetail] = useState({} as IStoreDataItem)
 
     const itemName = props.match.params.name
 

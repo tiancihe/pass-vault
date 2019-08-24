@@ -2,27 +2,25 @@ import { notification } from "antd"
 
 import { BASE_URL } from "./constants"
 
-type Method = "GET" | "POST" | "PUT" | "DELETE"
+notification.config({
+    duration: 1
+})
 
-interface RequestOptions extends RequestInit {
-    method?: Method
+interface IRequestOptions extends RequestInit {
+    method?: "GET" | "POST" | "PUT" | "DELETE"
     body?: any
 }
 
-interface Response<T = any> {
+interface IResponse<T = any> {
     success: boolean
     data?: T
     msg?: string
 }
 
-notification.config({
-    duration: 1
-})
-
 export default async function request<T = any>(
     url: string,
-    options = {} as RequestOptions
-): Promise<Response<T>> {
+    options = {} as IRequestOptions
+): Promise<IResponse<T>> {
     try {
         const { method = "GET", body } = options
         const requestInit: RequestInit = {
@@ -34,7 +32,7 @@ export default async function request<T = any>(
         if (body) requestInit.body = JSON.stringify(body)
 
         const res = await fetch(`${BASE_URL}${url}`, requestInit)
-        const json = (await res.json()) as Pick<Response<T>, "data" | "msg">
+        const json = (await res.json()) as Pick<IResponse<T>, "data" | "msg">
 
         switch (res.status) {
             case 200: {

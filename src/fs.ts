@@ -16,4 +16,8 @@ export default class FS {
     static rm = fs.unlinkSync
 
     static cp = fs.copyFileSync
+
+    static mkdir = fs.mkdirSync
+
+    static readDir = fs.readdirSync
 }

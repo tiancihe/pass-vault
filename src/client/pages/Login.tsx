@@ -3,8 +3,8 @@ import { RouteComponentProps } from "react-router-dom"
 import { Card, Form, Input, Icon, Button } from "antd"
 import { FormComponentProps, FormItemProps } from "antd/lib/form"
 
-import useAuth from "../hooks/useAuth"
-import { login } from "../services/auth"
+import useUser from "../hooks/useUser"
+import { login } from "../services/user"
 
 const formItemLayout: Pick<FormItemProps, "labelCol" | "wrapperCol"> = {
     labelCol: {
@@ -16,7 +16,7 @@ const formItemLayout: Pick<FormItemProps, "labelCol" | "wrapperCol"> = {
 }
 
 function Login(props: RouteComponentProps & FormComponentProps) {
-    const { setAuth } = useAuth()
+    const { setUser } = useUser()
 
     const { getFieldDecorator, validateFields } = props.form
 
@@ -40,9 +40,7 @@ function Login(props: RouteComponentProps & FormComponentProps) {
                             if (err) return
                             const res = await login(values)
                             if (res.success) {
-                                setAuth({
-                                    name: values.name
-                                })
+                                setUser(values.name)
                                 props.history.push("/")
                             }
                         })

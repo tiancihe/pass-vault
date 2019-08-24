@@ -1,17 +1,21 @@
 import request from "./request"
 
-import { Item, ItemInfo, SaveItemPayload } from "../../types/item"
+import {
+    IStoreDataItem,
+    IStoreDataItemInfo,
+    IStoreDataItemName
+} from "../../types"
 
 export function getItems() {
-    return request<ItemInfo[]>("/items")
+    return request<IStoreDataItemInfo[]>("/items")
 }
 
-export function getItem(name: string) {
-    return request<Item>(`/items/${name}`)
+export function getItem(name: IStoreDataItemName) {
+    return request<IStoreDataItem>(`/items/${name}`)
 }
 
-export function saveItem(payload: SaveItemPayload) {
-    return request<Item>("/items/save", {
+export function saveItem(payload: { name: IStoreDataItemName }) {
+    return request<IStoreDataItem>("/items/save", {
         method: "POST",
         body: payload
     })

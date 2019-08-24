@@ -4,10 +4,11 @@ import { Card, Row, Col } from "antd"
 
 import GlobalLayout from "../components/GlobalLayout"
 import { getItems } from "../services/item"
-import { ItemInfo } from "../../types/item"
+
+import { IStoreDataItemInfo } from "../../types"
 
 export default function Items() {
-    const [items, setItems] = useState([] as ItemInfo[])
+    const [items, setItems] = useState([] as IStoreDataItemInfo[])
 
     useEffect(() => {
         const init = async () => {
