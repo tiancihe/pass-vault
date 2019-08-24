@@ -25,3 +25,20 @@
 
 - Adds shebang -- v0.4.0 does not work due to lack of node shebang
 - Resolves version from package.json directly
+
+## 0.5.0
+
+- Completed UI
+- Use `os.homedir()` instead of `__dirname`
+- Move types into a single file for better management and sharing across client and server
+- Added user setting:
+  - defaultInvisible: list of invisible fields
+  - autoBackup: whether should pass-vault automatically backup store when store changes
+
+## 0.5.1
+
+- Added `Switch` component for `Route`s
+- Don't init user setting if not logged in
+- Manual control `MenuItem`s
+- Notification for errors
+- Rename App to CLI

@@ -1,6 +1,6 @@
 {
   "name": "pass-vault",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A command line app for managing secrets.",
   "keywords": [
     "password",
@@ -12,15 +12,14 @@
   "files": [
     "dist"
   ],
-  "main": "dist/app.js",
+  "main": "dist/cli.js",
   "bin": {
-    "pass": "dist/app.js"
+    "pass": "dist/cli.js"
   },
   "scripts": {
     "test": "jest",
-    "dev:client": "",
     "dev": "concurrently \"parcel watch src/server.ts --target node\" \"nodemon dist/server.js\" \"parcel watch src/client/index.html -d dist/client\"",
-    "build": "concurrently \"parcel build src/app.ts --target node --no-source-maps\" \"parcel build src/server.ts --target node --no-source-maps\" \"parcel build src/client/index.html -d dist/client --no-source-maps\""
+    "build": "concurrently \"parcel build src/cli.ts --target node --no-source-maps\" \"parcel build src/server.ts --target node --no-source-maps\" \"parcel build src/client/index.html -d dist/client --no-source-maps\""
   },
   "dependencies": {
     "cors": "^2.8.5",

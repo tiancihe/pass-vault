@@ -3,7 +3,7 @@ import { notification } from "antd"
 import { BASE_URL } from "./constants"
 
 notification.config({
-    duration: 1
+    duration: 1.5
 })
 
 interface IRequestOptions extends RequestInit {
@@ -57,6 +57,7 @@ export default async function request<T = any>(
         }
     } catch (error) {
         console.error(error)
+        notification.warning({ message: error.message })
         return {
             success: false
         }

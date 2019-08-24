@@ -62,7 +62,13 @@ server.post("/api/login", (req, res, next) => {
             msg: `Logged in as ${user}`
         })
     } catch (err) {
-        next(err)
+        if (err.message === Store.INCORRECT_SECRET_ERROR) {
+            res.status(400).json({
+                msg: "Incorrect password"
+            })
+        } else {
+            next(err)
+        }
     }
 })
 

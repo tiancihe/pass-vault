@@ -41,11 +41,13 @@ class Store {
         }
     }
 
+    static readonly INCORRECT_SECRET_ERROR = "Your secret is not correct."
+
     read() {
         const store = this.encryptor.decrypt(FS.read(this.storePath)) as IStore
 
         if (!store) {
-            throw new Error("Your secret is not correct.")
+            throw new Error(Store.INCORRECT_SECRET_ERROR)
         }
 
         return store

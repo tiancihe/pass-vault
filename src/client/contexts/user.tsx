@@ -1,7 +1,7 @@
 import React, { createContext, useState, useMemo, useEffect } from "react"
 
-import { IUser } from "../../types"
 import { getCurrentUser } from "../services/user"
+import { IUser } from "../../types"
 
 export const UserContext = createContext(null as {
     user: IUser

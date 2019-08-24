@@ -1,8 +1,9 @@
 import React from "react"
-import { HashRouter, Route } from "react-router-dom"
+import { HashRouter, Switch, Route } from "react-router-dom"
 
 import { UserProvider } from "./contexts/user"
 import { SettingProvider } from "./contexts/setting"
+
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import CreateItem from "./pages/CreateItem"
@@ -16,16 +17,22 @@ export default function App() {
         <HashRouter>
             <UserProvider>
                 <SettingProvider>
-                    <Route path="/" exact component={Home} />
-                    <Route path="/items" exact component={Items} />
-                    <Route path="/items/create" exact component={CreateItem} />
-                    <Route path="/items/:name" component={ItemDetail} />
-                    <Route path="/login" component={Login} />
-                    <Route
-                        path="/backup-and-restore"
-                        component={BackupAndRestore}
-                    />
-                    <Route path="/setting" component={Setting} />
+                    <Switch>
+                        <Route path="/" exact component={Home} />
+                        <Route path="/items" exact component={Items} />
+                        <Route
+                            path="/items/create"
+                            exact
+                            component={CreateItem}
+                        />
+                        <Route path="/items/:name" component={ItemDetail} />
+                        <Route path="/login" component={Login} />
+                        <Route
+                            path="/backup-and-restore"
+                            component={BackupAndRestore}
+                        />
+                        <Route path="/setting" component={Setting} />
+                    </Switch>
                 </SettingProvider>
             </UserProvider>
         </HashRouter>

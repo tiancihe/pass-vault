@@ -1,6 +1,6 @@
 import React from "react"
 import { Link, withRouter, RouteComponentProps } from "react-router-dom"
-import { Layout, Menu, Icon, Dropdown } from "antd"
+import { Layout, Menu, Icon, Dropdown, message } from "antd"
 
 import useUser from "../hooks/useUser"
 import { logout } from "../services/user"
@@ -9,6 +9,11 @@ function GlobalLayout(
     props: RouteComponentProps & { children?: React.ReactNode }
 ) {
     const { isLoggedIn, user, setUser } = useUser()
+
+    const handleNavigate = (route: string) => {
+        if (isLoggedIn) props.history.push(route)
+        message.warning("Please login first")
+    }
 
     return (
         <Layout style={{ height: "100vh" }}>
@@ -19,29 +24,33 @@ function GlobalLayout(
                     </Link>
                 </div>
                 <Menu theme="dark" selectedKeys={[props.location.pathname]}>
-                    <Menu.Item key="/items">
-                        <Link to="/items">
-                            <Icon type="unordered-list" />
-                            Items
-                        </Link>
+                    <Menu.Item
+                        key="/items"
+                        onClick={() => handleNavigate("/items")}
+                    >
+                        <Icon type="unordered-list" />
+                        Items
                     </Menu.Item>
-                    <Menu.Item key="/items/create">
-                        <Link to="/items/create">
-                            <Icon type="plus" />
-                            New
-                        </Link>
+                    <Menu.Item
+                        key="/items/create"
+                        onClick={() => handleNavigate("/items/create")}
+                    >
+                        <Icon type="plus" />
+                        New
                     </Menu.Item>
-                    <Menu.Item key="/backup-and-restore">
-                        <Link to="/backup-and-restore">
-                            <Icon type="database" />
-                            Backup and Restore
-                        </Link>
+                    <Menu.Item
+                        key="/backup-and-restore"
+                        onClick={() => handleNavigate("/backup-and-restore")}
+                    >
+                        <Icon type="database" />
+                        Backup and Restore
                     </Menu.Item>
-                    <Menu.Item key="/setting">
-                        <Link to="/setting">
-                            <Icon type="setting" />
-                            Setting
-                        </Link>
+                    <Menu.Item
+                        key="/setting"
+                        onClick={() => handleNavigate("/setting")}
+                    >
+                        <Icon type="setting" />
+                        Setting
                     </Menu.Item>
                 </Menu>
             </Layout.Sider>
@@ -76,7 +85,8 @@ function GlobalLayout(
                             </Dropdown>
                         ) : (
                             <Link to="/login">
-                                <Icon type="user" />
+                                <Icon type="login" />
+                                &nbsp;Login
                             </Link>
                         )}
                     </div>
