@@ -46,3 +46,7 @@
 ## 0.5.2
 
 - Fixed a issue: (Fogot `else` 😑)
+
+## 0.5.3
+
+- Fixed a issue: Wrong DIR

@@ -3,7 +3,7 @@ import path from "path"
 
 export const SERVER_PORT = 6789
 
-export const IS_DEV = process.env.NODE_ENV !== "production"
+export const IS_DEV = process.env.NODE_ENV === "development"
 
 const DIR = IS_DEV ? path.resolve(__dirname, "..") : os.homedir()
 
